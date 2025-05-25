@@ -1,3 +1,115 @@
+# Gateway ESP32 - Hệ Thống Giám Sát Mực Nước và Vị Trí
+
+## Tổng Quan
+Đây là dự án Gateway ESP32 được thiết kế để thu thập và truyền dữ liệu từ các cảm biến mực nước và GPS thông qua giao thức LoRa, sau đó gửi dữ liệu lên MQTT broker để xử lý và hiển thị.
+
+## Tính Năng Chính
+- Kết nối WiFi và MQTT broker
+- Thu thập dữ liệu mực nước qua LoRa mỗi 5 giây
+- Thu thập dữ liệu GPS (kinh độ, vĩ độ) qua LoRa mỗi 1 giây
+- Gửi dữ liệu lên MQTT broker dưới dạng JSON
+- Giao diện web để giám sát và điều khiển
+
+## Cấu Trúc Dự Án
+```
+gateway/
+├── common/
+│   ├── app_config/        # Cấu hình WiFi và các thông số hệ thống
+│   ├── http_server_app/   # Giao diện web server
+│   ├── lora/             # Xử lý giao tiếp LoRa
+│   ├── mqtt/             # Xử lý giao tiếp MQTT
+│   └── sx1278_ra02/      # Thư viện driver LoRa
+├── main/                 # Chương trình chính
+├── html/                # File HTML cho web interface dùng để cấu hình wifi
+└── build/              # Thư mục build
+```
+
+## Yêu Cầu Phần Cứng
+- ESP32 Development Board
+- Module LoRa SX1278 RA-02
+- Kết nối WiFi
+- Nguồn điện 5V
+
+## Yêu Cầu Phần Mềm
+- ESP-IDF (Espressif IoT Development Framework)
+- MQTT Broker (ví dụ: Mosquitto)
+- Python 3.x (để chạy các script hỗ trợ)
+
+## Cài Đặt và Build
+1. Cài đặt ESP-IDF theo hướng dẫn chính thức
+2. Clone repository:
+   ```bash
+   git clone [repository_url]
+   cd gateway
+   ```
+3. Cấu hình project:
+   ```bash
+   idf.py menuconfig
+   ```
+4. Build project:
+   ```bash
+   idf.py build
+   ```
+5. Flash lên ESP32:
+   ```bash
+   idf.py -p [PORT] flash monitor
+   ```
+
+## Cấu Hình
+### WiFi
+- SSID và password được cấu hình trong `app_config.h`
+- Có thể thay đổi thông qua menuconfig
+
+### MQTT
+- Broker address: mqtt://192.168.1.11:1883 chạy Local trong máy (xem đúng ip trên máy bằng cách vào CMD và gõ: ipconfig)
+- Topic: datn_gpsrtk
+- Format dữ liệu JSON:
+  ```json
+  {
+    "waterLevel": 1.5,
+    "latitude": 10.762622,
+    "longitude": 106.660172
+  }
+  ```
+
+### LoRa
+- Tần số: 433MHz
+- Bandwidth: 125kHz
+- Spreading Factor: 7
+- Coding Rate: 5
+- Preamble Length: 8
+- Sync Word: 0x12
+
+## Định Dạng Dữ Liệu LoRa
+### Mực Nước
+- Format: "WATER:XX.XX"
+- Ví dụ: "WATER:1.50"
+- Tần suất: 5 giây/lần
+
+### GPS
+- Format: "GPS:XX.XXXXX,YY.YYYYY"
+- Ví dụ: "GPS:10.76262,106.66017"
+- Tần suất: 1 giây/lần
+
+## Sử Dụng
+1. Kết nối phần cứng theo sơ đồ
+2. Cấu hình WiFi và MQTT broker
+3. Flash firmware lên ESP32
+4. Kiểm tra kết nối qua serial monitor
+5. Truy cập web interface qua địa chỉ IP của ESP32
+
+## Xử Lý Lỗi
+- Kiểm tra kết nối WiFi
+- Kiểm tra kết nối MQTT broker
+- Kiểm tra tín hiệu LoRa
+- Xem log qua serial monitor
+
+## Đóng Góp
+Mọi đóng góp đều được hoan nghênh. Vui lòng tạo issue hoặc pull request.
+
+## Giấy Phép
+Dự án này được phát hành dưới giấy phép MIT. Xem file LICENSE để biết thêm chi tiết.
+
 | Supported Targets | ESP32 | ESP32-C3 | ESP32-S2 | ESP32-S3 |
 | ----------------- | ----- | -------- | -------- | -------- |
 
